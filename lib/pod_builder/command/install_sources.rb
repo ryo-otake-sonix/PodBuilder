@@ -54,19 +54,25 @@ module PodBuilder
 
         Dir.chdir(repo_dir) do
           puts "Checking out #{spec.podspec_name}".yellow
+          Pod::UI.puts "repo_dir: #{repo_dir}"
+          Pod::UI.puts "specs: #{spec}"
           raise "\n\nFailed cheking out #{spec.name}".red if !system(git_hard_checkout_cmd(spec))
         end
       end
 
       def self.git_hard_checkout_cmd(spec)
         prefix = "git fetch --all --tags --prune; git reset --hard"
+        Pod::UI.puts "prefix: #{prefix}"
         if spec.tag
+          Pod::UI.puts "#{prefix} tags/#{spec.tag}"
           return "#{prefix} tags/#{spec.tag}"
         end
         if spec.commit
+          Pod::UI.puts "#{prefix} #{spec.commit}"
           return "#{prefix} #{spec.commit}"
         end
         if spec.branch
+          Pod::UI.puts "#{prefix} origin/#{spec.branch}"
           return "#{prefix} origin/#{spec.branch}"
         end
   
