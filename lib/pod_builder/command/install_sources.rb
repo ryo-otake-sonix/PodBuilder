@@ -49,15 +49,14 @@ module PodBuilder
         repo_dir = File.join(dest_path, spec.podspec_name)
         Pod::UI.puts "repo_dir: #{repo_dir}"
         Dir.chdir(dest_path) do
-          Pod::UI.puts "current dir: #{Dir.pwd}"
-          Pod::UI.puts "対象ライブラリのリポジトリがあるかどうか: #{!File.directory?(repo_dir)}"
+          Pod::UI.puts "#{Dir.pwd}"
           if !File.directory?(repo_dir) # 対象ライブラリのリポジトリがあるかどうか。なければcloneする。
             raise "\n\nFailed cloning #{spec.name}".red if !system("git clone #{spec.repo} #{spec.podspec_name}")
           end
         end
 
         Dir.chdir(repo_dir) do # 対象ライブラリのリポジトリに移動
-          Pod::UI.puts "current dir: #{Dir.pwd}"
+          Pod::UI.puts "#{Dir.pwd}"
           puts "Checking out #{spec.podspec_name}".yellow
           raise "\n\nFailed cheking out #{spec.name}".red if !system(git_hard_checkout_cmd(spec))
         end
