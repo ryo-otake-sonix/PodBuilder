@@ -51,6 +51,8 @@ module PodBuilder
         Dir.chdir(dest_path) do
           Pod::UI.puts "current dir: #{Dir.pwd}"
           Pod::UI.puts "対象ライブラリのリポジトリがあるかどうか: #{File.directory?(repo_dir)}"
+          Pod::UI.puts "リポジトリ一覧: #{`ls EasyPeasy`}"
+          Pod::UI.puts "リポジトリ一覧: #{`ls Nimble`}"
           Pod::UI.puts "リポジトリ一覧: #{`ls`}"
           if !File.directory?(repo_dir) # 対象ライブラリのリポジトリがあるかどうか。なければcloneする。
             raise "\n\nFailed cloning #{spec.name}".red if !system("git clone #{spec.repo} #{spec.podspec_name}")
