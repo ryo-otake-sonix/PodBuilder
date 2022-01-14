@@ -47,7 +47,7 @@ module PodBuilder
         Pod::UI.puts "dest_path: #{dest_path}"
 
         repo_dir = File.join(dest_path, spec.podspec_name)
-        Pod.UI.puts "repo_dir: #{repo_dir}"
+        Pod::UI.puts "repo_dir: #{repo_dir}"
         Dir.chdir(dest_path) do
           Pod::UI.puts "#{Dir.pwd}"
           if !File.directory?(repo_dir) # 対象ライブラリのリポジトリがあるかどうか。なければcloneする。
