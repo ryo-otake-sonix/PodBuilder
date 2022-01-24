@@ -11,9 +11,7 @@ module PodBuilder
 
         PodBuilder::prepare_basepath
 
-        if OPTIONS.has_key?(:designate_pod)
-          argument_pods = ARGV.dup
-        end
+        argument_pods = OPTIONS.has_key?(:designate_pod_library) ? ARGV.dup : []
 
         install_update_repo = OPTIONS.fetch(:update_repos, true)
         installer, analyzer = Analyze.installer_at(PodBuilder::basepath, install_update_repo)
@@ -25,13 +23,11 @@ module PodBuilder
         
         framework_files.each do |path|
           rel_path = Pathname.new(path).relative_path_from(Pathname.new(base_path)).to_s
+          library_name = Pathname.new(path).relative_path_from(Pathname.new(base_path)).to_s.sub!(/\/.*/m, "")
+          next if OPTIONS.has_key?(:designate_pod_library) && !argument_pods.include?(library_name)
 
           if podfile_spec = podfile_items.detect { |x| "#{x.root_name}/#{x.prebuilt_rel_path}" == rel_path }
-            if OPTIONS.has_key?(:designate_pod)
-              update_repo(podfile_spec) if argument_pods.include?(podfile_spec.name)
-            else
-              update_repo(podfile_spec)
-            end
+            update_repo(podfile_spec)
           end
         end
 
