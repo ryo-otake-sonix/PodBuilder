@@ -11,6 +11,10 @@ module PodBuilder
 
         PodBuilder::prepare_basepath
 
+        if OPTIONS.has_key?(:designate_pod)
+          argument_pods = ARGV.dup
+        end
+
         install_update_repo = OPTIONS.fetch(:update_repos, true)
         installer, analyzer = Analyze.installer_at(PodBuilder::basepath, install_update_repo)
         podfile_items = Analyze.podfile_items(installer, analyzer).select { |x| !x.is_prebuilt }
@@ -23,7 +27,11 @@ module PodBuilder
           rel_path = Pathname.new(path).relative_path_from(Pathname.new(base_path)).to_s
 
           if podfile_spec = podfile_items.detect { |x| "#{x.root_name}/#{x.prebuilt_rel_path}" == rel_path }
-            update_repo(podfile_spec)
+            if OPTIONS.has_key?(:designate_pod)
+              update_repo(podfile_spec) if argument_pods.include?(podfile_spec.name)
+            else
+              update_repo(podfile_spec)
+            end
           end
         end
 
