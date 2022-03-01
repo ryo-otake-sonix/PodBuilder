@@ -226,7 +226,7 @@ module PodBuilder
           data["swift_version"] = swift_version
         end
         
-        specs = podfile_items.select { |x| x.module_name == podfile_item.module_name }
+        specs = podfile_items.select { |x| x.root_name == podfile_item.root_name }
         subspecs_deps = specs.map(&:dependency_names).flatten
         subspec_self_deps = subspecs_deps.select { |x| x.start_with?("#{prebuilt_name}/") }
         data["specs"] = (specs.map(&:name) + subspec_self_deps).uniq
@@ -391,9 +391,11 @@ module PodBuilder
 
       non_prebuilt_items = podfile_items.reject(&:is_prebuilt)
 
-      non_prebuilt_items.reject! { |item| 
-        folder_path = PodBuilder::buildpath_prebuiltpath(item.module_name)
-        File.directory?(folder_path) && Dir.empty?(folder_path) # When using prebuilt items we end up with empty folders
+      non_prebuilt_items.reject! { |item|
+        [item.module_name, item.root_name]
+          .map { |t| PodBuilder::buildpath_prebuiltpath(t) }
+          .select { |t| File.directory?(t) }  
+          .all? { |t| Dir.empty?(t) } # When using prebuilt items we end up with empty folders
       } 
 
       non_prebuilt_items.each do |item|
